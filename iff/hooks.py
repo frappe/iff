@@ -56,7 +56,7 @@ app_license = "MIT"
 # ------------
 
 # before_install = "iff.install.before_install"
-# after_install = "iff.install.after_install"
+after_install = "iff.iff.install.after_install"
 
 # Desk Notifications
 # ------------------
