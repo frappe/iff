@@ -9,10 +9,17 @@ def after_install():
 
 def create_e_mandate_custom_fields():
 	create_custom_field('Member', {
+		'label': _('E Mandate Details'),
+		'fieldname': 'e_mandate_section',
+		'fieldtype': 'Section Break',
+		'insert_after': 'subscription_end'
+	})
+
+	create_custom_field('Member', {
 		'label': _('Payment Via E Mandate?'),
 		'fieldname': 'e_mandate',
 		'fieldtype': 'Check',
-		'insert_after': 'subscription_end'
+		'insert_after': 'e_mandate_section'
 	})
 
 	create_custom_field('Member', {
@@ -20,6 +27,13 @@ def create_e_mandate_custom_fields():
 		'fieldname': 'pan_number',
 		'fieldtype': 'Data',
 		'insert_after': 'email'
+	})
+
+	create_custom_field('Member', {
+		'label': _('Contact Number'),
+		'fieldname': 'contact',
+		'fieldtype': 'Data',
+		'insert_after': 'pan_number'
 	})
 
 	create_custom_field('Member', {
