@@ -25,7 +25,7 @@ def create_e_mandate_custom_fields():
 	create_custom_field('Member', {
 		'label': _('Razorpay Token'),
 		'fieldname': 'razorpay_token',
-		'fieldtype': 'Data',
+		'fieldtype': 'Password',
 		'insert_after': 'e_mandate'
 	})
 
