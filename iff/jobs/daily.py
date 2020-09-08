@@ -51,7 +51,7 @@ class EMandatePayment():
 				if last_membership:
 					expiry = last_membership['to_date']
 
-			if expiry > self.today and self.today < member.subscription_end:
+			if expiry >= self.today and self.today < member.subscription_end:
 				all_members.append(member)
 
 		return all_members
@@ -63,7 +63,7 @@ class EMandatePayment():
 		amount = self.plans[member.membership_type] * 100 # convert rupee to paise
 
 		order = self.client.order.create(data = {
-			"amount": amount
+			"amount": amount,
 			"currency": "INR",
 			"payment_capture": 1
 		})
