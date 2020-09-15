@@ -21,6 +21,12 @@ class EMandatePayment():
 			frappe.throw("Razorpay Not Setup")
 
 	def trigger_payments(self):
+		"""Payment Workflow Utility
+			1. Get all members due for payment
+			1. Trigger Payment
+			1. Update Membership
+			1. Log success and failed payments
+		"""
 		members = get_members_due_for_payment()
 
 		for member in members:
@@ -28,7 +34,10 @@ class EMandatePayment():
 				payment = self.trigger_payment_for_member(member)
 				membership = self.update_membership_details(member, payment)
 				self.successful_transaction.append([member.name, membership])
-			except:
+			except Exception as e:
+				msg = e + "\n\n" + frappe.get_traceback()
+				title = "E Mandate Payment Error for {0}".format(member.name)
+				log = frappe.log_error(msg, title)
 				self.failed_transaction.append([member.name, e])
 			finally:
 				send_update_email(successful_transaction, failed_transaction)
@@ -58,6 +67,14 @@ class EMandatePayment():
 
 
 	def trigger_payment_for_member(self, member):
+		"""Trigger Razorpay payment and return payment ID
+
+		Args:
+			member (object): Member doctype object
+
+		Returns:
+			string: Razorpay payment ID
+		"""
 		# https://razorpay.com/docs/api/recurring-payments/emandate/subsequent-payments/
 
 		amount = self.plans[member.membership_type] * 100 # convert rupee to paise
@@ -118,7 +135,7 @@ class EMandatePayment():
 
 		return membership
 
-def send_update_email():
+def send_update_email(successful, failed):
 	return None
 
 def get_last_membership():
