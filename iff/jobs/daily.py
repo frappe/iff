@@ -27,7 +27,7 @@ class EMandatePayment():
 			1. Update Membership
 			1. Log success and failed payments
 		"""
-		members = get_members_due_for_payment()
+		members = self.get_members_due_for_payment()
 
 		for member in members:
 			try:
@@ -40,7 +40,7 @@ class EMandatePayment():
 				log = frappe.log_error(msg, title)
 				self.failed_transaction.append([member.name, e])
 			finally:
-				send_update_email(successful_transaction, failed_transaction)
+				send_update_email(self.successful_transaction, self.failed_transaction)
 
 	def get_members_due_for_payment(self):
 		"""Compare expiry of all members and return list of members whose payment is due
@@ -60,7 +60,7 @@ class EMandatePayment():
 				if last_membership:
 					expiry = last_membership['to_date']
 
-			if expiry >= self.today and self.today < member.subscription_end:
+			if expiry and expiry >= self.today and self.today < member.subscription_end:
 				all_members.append(member)
 
 		return all_members
@@ -138,7 +138,7 @@ class EMandatePayment():
 def send_update_email(successful, failed):
 	return None
 
-def get_last_membership():
+def get_last_membership(member):
 	'''Returns last membership if exists'''
 	last_membership = frappe.get_all('Membership', 'name,to_date,membership_type',
 		dict(member=member, paid=1), order_by='to_date desc', limit=1)
