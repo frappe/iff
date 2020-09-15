@@ -1,8 +1,9 @@
 from collections import defaultdict
 
+import json
 import frappe
 from frappe.utils import getdate, add_months
-from frappe.integrations.utils import get_payment_gateway_controller
+from frappe.integrations.utils import get_payment_gateway_controller, make_post_request
 from razorpay.constants.url import URL
 from frappe.contacts.doctype.contact.contact import get_default_contact
 
@@ -13,10 +14,10 @@ class EMandatePayment():
 		self.plans = get_all_plans()
 		self.today = getdate()
 		self.next = add_months(getdate(), 1)
-		controller = get_payment_gateway_controller("Razorpay")
-		controller.init_client()
-		if controller.client:
-			self.client = controller
+		self.controller = get_payment_gateway_controller("Razorpay")
+		self.controller.init_client()
+		if self.controller.client:
+			self.client = self.controller.client
 		else:
 			frappe.throw("Razorpay Not Setup")
 
@@ -35,9 +36,8 @@ class EMandatePayment():
 				membership = self.update_membership_details(member, payment)
 				self.successful_transaction.append([member.name, membership])
 			except Exception as e:
-				msg = e + "\n\n" + frappe.get_traceback()
 				title = "E Mandate Payment Error for {0}".format(member.name)
-				log = frappe.log_error(msg, title)
+				log = frappe.log_error(e, title)
 				self.failed_transaction.append([member.name, e])
 			finally:
 				send_update_email(self.successful_transaction, self.failed_transaction)
@@ -100,8 +100,9 @@ class EMandatePayment():
 
 		# Razorpay python does not have recurrig payments yet
 		# use razorpay client to make requests
-		url = "{}/create/recurring".format(URL.BASE_URL)
-		payment = self.client.post(url, {
+		url = "{}/payments/create/recurring".format(URL.BASE_URL)
+
+		data = {
 			"email": member.email_id or member.email,
 			"contact": member.contact,
 			"amount": amount,
@@ -110,7 +111,19 @@ class EMandatePayment():
 			"customer_id": member.customer_id,
 			"token": member.get_password(fieldname="razorpay_token"),
 			"recurring": 1,
-		})
+			"notes": {
+				"erpnext-name": member.name
+			}
+		}
+
+		payment = make_post_request(
+			url,
+			auth=(self.controller.api_key, self.controller.get_password(fieldname="api_secret", raise_exception=False)),
+			data=json.dumps(data),
+			headers={
+				"content-type": "application/json"
+			}
+		)
 
 		return payment.get("razorpay_payment_id")
 
