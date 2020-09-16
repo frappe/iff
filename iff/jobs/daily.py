@@ -138,6 +138,12 @@ class EMandatePayment():
 
 	def update_membership_details(self, member, payment):
 		membership = frappe.new_doc("Membership")
+
+		# Take date explicitly from members, since
+		# payment attempts can fail and be retried the next day
+		from_date = member.membership_expiry_date
+		to_date = add_months(from_date, 1)
+
 		membership.update({
 			"member": member.name,
 			"membership_status": "Current",
@@ -145,13 +151,13 @@ class EMandatePayment():
 			"currency": "INR",
 			"paid": 1,
 			"payment_id": payment,
-			"from_date": self.today,
-			"to_date": self.next,
+			"from_date": from_date,
+			"to_date": to_date,
 			"amount": self.plans[member.membership_type]
 		})
 		membership.insert(ignore_permissions=True)
 
-		member.membership_expiry_date = self.next
+		member.membership_expiry_date = to_date
 		member.save(ignore_permissions=True)
 
 		return membership
