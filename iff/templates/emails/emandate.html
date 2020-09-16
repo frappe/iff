@@ -1,0 +1,41 @@
+<h1>E - Mandate Payment Summary</h1>
+
+{% if successful|length %}
+<h3>Successful Transactions:</h3>
+
+<table class="table table-bordered small" style="max-width: 500px;">
+	<tr>
+		<td>Member Name</td>
+		<td>Plan</td>
+		<td>Membership From</td>
+		<td>Membership To</td>
+	</tr>
+	{% for item in successful %}
+	<tr>
+		<td>{{ item.member }}</td>
+		<td>{{ item.membership_type }} ({{ item.amount }})</td>
+		<td>{{ item.from_date }}</td>
+		<td>{{ item.to_date }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
+
+{% if failed|length %}
+<h3>Failed Transactions:</h3>
+
+<table class="table table-bordered small" style="max-width: 500px;">
+	<tr>
+		<td>Member Name</td>
+		<td>Reason</td>
+		<td>Error Log</td>
+	</tr>
+	{% for item in failed %}
+	<tr>
+		<td>{{ item[0] }}</td>
+		<td><a href="{{ item[1] }}">Error Log</a></td>
+		<td>{{ item[2] or "Not Specified" }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}

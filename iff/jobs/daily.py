@@ -1,11 +1,14 @@
 from collections import defaultdict
 
 import json
+
 import frappe
-from frappe.utils import getdate, add_months
+from frappe.utils import get_url_to_form, getdate, add_months
+from frappe.utils.user import get_system_managers
 from frappe.integrations.utils import get_payment_gateway_controller, make_post_request
-from razorpay.constants.url import URL
 from frappe.contacts.doctype.contact.contact import get_default_contact
+
+from razorpay.constants.url import URL
 
 class EMandatePayment():
 	def __init__(self):
@@ -37,13 +40,13 @@ class EMandatePayment():
 			try:
 				payment = self.trigger_payment_for_member(member)
 				membership = self.update_membership_details(member, payment)
-				self.successful_transaction.append([member.name, membership])
+				self.successful_transaction.append(membership)
 			except Exception as e:
 				title = "E Mandate Payment Error for {0}".format(member.name)
 				log = frappe.log_error(e, title)
-				self.failed_transaction.append([member.name, e])
-			finally:
-				send_update_email(self.successful_transaction, self.failed_transaction)
+				self.failed_transaction.append([member.name,get_url_to_form("Error Log", log.name), e])
+
+		send_update_email(self.successful_transaction, self.failed_transaction)
 
 	def get_members_due_for_payment(self):
 		"""Compare expiry of all members and return list of members whose payment is due
@@ -84,7 +87,6 @@ class EMandatePayment():
 			string: Razorpay payment ID
 		"""
 		# https://razorpay.com/docs/api/recurring-payments/emandate/subsequent-payments/
-
 		amount = self.plans[member.membership_type] * 100 # convert rupee to paise
 
 		order = self.client.order.create(data = {
@@ -163,7 +165,15 @@ class EMandatePayment():
 		return membership
 
 def send_update_email(successful, failed):
-	return None
+	frappe.sendmail(
+		subject='E Mandate Summary',
+		recipients=get_system_managers(),
+		template="emandate",
+		args={
+			'successful': successful,
+			'failed': failed
+		}
+	)
 
 def get_last_membership(member):
 	'''Returns last membership if exists'''
