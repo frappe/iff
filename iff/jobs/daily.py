@@ -166,7 +166,7 @@ class EMandatePayment():
 
 def send_update_email(successful, failed):
 	frappe.sendmail(
-		subject='E Mandate Summary',
+		subject='E Mandate Payments Summary',
 		recipients=get_system_managers(),
 		template="emandate",
 		args={
