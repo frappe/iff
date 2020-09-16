@@ -14,6 +14,7 @@ class EMandatePayment():
 		self.plans = get_all_plans()
 		self.today = getdate()
 		self.next = add_months(getdate(), 1)
+		self.enabled = frappe.db.get_single_value("Membership Settings", 'enable_e_mandate_payments')
 		self.controller = get_payment_gateway_controller("Razorpay")
 		self.controller.init_client()
 		if self.controller.client:
@@ -28,6 +29,8 @@ class EMandatePayment():
 			1. Update Membership
 			1. Log success and failed payments
 		"""
+		if not self.enabled:
+			frappe.throw("Please Enable E Mandate Payments in Membership Settings")
 		members = self.get_members_due_for_payment()
 
 		for member in members:
@@ -60,7 +63,12 @@ class EMandatePayment():
 				if last_membership:
 					expiry = last_membership['to_date']
 
-			if expiry and expiry >= self.today and self.today < member.subscription_end:
+			if (
+				member.subscription_end \
+				and expiry \
+				and expiry >= self.today \
+				and self.today < member.subscription_end
+			):
 				all_members.append(member)
 
 		return all_members
