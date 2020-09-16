@@ -91,7 +91,7 @@ after_install = "iff.iff.install.after_install"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"iff.tasks.all"
 # 	],
@@ -107,7 +107,7 @@ after_install = "iff.iff.install.after_install"
 # 	"monthly": [
 # 		"iff.tasks.monthly"
 # 	]
-# }
+}
 
 # Testing
 # -------
