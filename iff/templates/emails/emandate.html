@@ -23,7 +23,9 @@
 
 {% if failed|length %}
 <h3>Failed Transactions:</h3>
-
+<p>The following transactions have failed, payment for these members will be tried again.</p>
+<p>If you are making another payment manually, please make sure to create the subsequent membership in ERPNext.</p>
+<br>
 <table class="table table-bordered small" style="max-width: 500px;">
 	<tr>
 		<td>Member Name</td>
