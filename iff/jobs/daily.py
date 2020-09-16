@@ -66,7 +66,7 @@ class EMandatePayment():
 			if (
 				member.subscription_end \
 				and expiry \
-				and expiry >= self.today \
+				and expiry <= self.today \
 				and self.today < member.subscription_end
 			):
 				all_members.append(member)
