@@ -95,9 +95,9 @@ after_install = "iff.iff.install.after_install"
 # 	"all": [
 # 		"iff.tasks.all"
 # 	],
-# 	"daily": [
-# 		"iff.tasks.daily"
-# 	],
+	"daily": [
+		"iff.jobs.daily.execute"
+	],
 # 	"hourly": [
 # 		"iff.tasks.hourly"
 # 	],

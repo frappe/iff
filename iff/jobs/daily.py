@@ -189,3 +189,10 @@ def get_all_plans():
 		all_plans[plan["name"]] = plan["amount"]
 
 	return all_plans
+
+def execute():
+	if not frappe.db.get_single_value("Membership Settings", 'enable_e_mandate_payments'):
+		print("E Mandate Payment is Disabled")
+		return
+	em = EMandatePayment()
+	em.trigger_payments()
