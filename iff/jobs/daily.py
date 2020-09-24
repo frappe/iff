@@ -36,6 +36,9 @@ class EMandatePayment():
 			frappe.throw("Please Enable E Mandate Payments in Membership Settings")
 		members = self.get_members_due_for_payment()
 
+		if not members:
+			return
+
 		for member in members:
 			try:
 				payment = self.trigger_payment_for_member(member)
