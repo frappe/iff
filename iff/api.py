@@ -1,6 +1,26 @@
 import frappe
 import razorpay
-from frappe.utils import getdate, add_months
+from frappe.utils import getdate, add_months, add_years
+
+@frappe.whitelist()
+def create_member(name, customer_id, token, phone, email, pan, plan):
+	member = frappe.new_doc("Member")
+	today = getdate()
+	member.update({
+		"member_name": name,
+		"membership_type": plan,
+		"pan_number": pan,
+		"email_id": email,
+		"contact": phone,
+		"razorpay_token": token,
+		"customer_id": customer_id,
+		"subscription_activated": 1,
+		"token_status": "Initiated",
+		"e_mandate": 1,
+		"subscription_start": today,
+		"subscription_end": add_years(today, 2),
+	})
+	member.insert()
 
 def verify_signature(data):
 	signature = frappe.request.headers.get('X-Razorpay-Signature')
