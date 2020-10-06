@@ -168,15 +168,16 @@ class EMandatePayment():
 		return membership
 
 def send_update_email(successful, failed):
-	frappe.sendmail(
-		subject='E Mandate Payments Summary',
-		recipients=get_system_managers(),
-		template="emandate",
-		args={
-			'successful': successful,
-			'failed': failed
-		}
-	)
+	if len(successful) and len(failed):
+		frappe.sendmail(
+			subject='E Mandate Payments Summary',
+			recipients=get_system_managers(),
+			template="emandate",
+			args={
+				'successful': successful,
+				'failed': failed
+			}
+		)
 
 def get_last_membership(member):
 	'''Returns last membership if exists'''
