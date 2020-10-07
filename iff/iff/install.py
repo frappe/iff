@@ -39,7 +39,7 @@ def create_e_mandate_custom_fields():
 	create_custom_field('Member', {
 		'label': _('Razorpay Token'),
 		'fieldname': 'razorpay_token',
-		'fieldtype': 'Password',
+		'fieldtype': 'Data',
 		'insert_after': 'e_mandate'
 	})
 
@@ -47,7 +47,7 @@ def create_e_mandate_custom_fields():
 		'label': _('Token Status'),
 		'fieldname': 'token_status',
 		'fieldtype': 'Select',
-		'options': '\nInitiated\nConfirmed\nRejected',
+		'options': '\nInitiated\nConfirmed\nRejected\nCancelled',
 		'insert_after': 'razorpay_token'
 	})
 
