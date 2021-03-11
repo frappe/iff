@@ -51,10 +51,10 @@ def create_e_mandate_custom_fields():
 		'insert_after': 'razorpay_token'
 	})
 
-	create_custom_field('Membership Settings', {
+	create_custom_field('Non Profit Settings', {
 		'label': _('Enable E Mandate Daily Trigger'),
 		'fieldname': 'enable_e_mandate_payments',
 		'fieldtype': 'Check',
-		'insert_after': 'enable_razorpay'
+		'insert_after': 'enable_razorpay_for_memberships'
 	})
 
